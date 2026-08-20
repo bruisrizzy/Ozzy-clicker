@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ozzy Clicker 🐾 | The Ultimate Doggo Idle Game</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            fredoka: ['Fredoka', 'sans-serif'],
+            outfit: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            amber: {
+              50: '#fffbeb',
+              100: '#fef3c7',
+              200: '#fde68a',
+              300: '#fcd34d',
+              400: '#fbbf24',
+              500: '#f59e0b',
+              600: '#d97706',
+              700: '#b45309',
+              800: '#92400e',
+              900: '#78350f',
+            }
+          },
+          animation: {
+            'bounce-short': 'bounceShort 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+            'pulse-subtle': 'pulseSubtle 2s infinite',
+            'float-slow': 'floatSlow 4s ease-in-out infinite',
+          },
+          keyframes: {
+            bounceShort: {
+              '0%, 100%': { transform: 'scale(1)' },
+              '50%': { transform: 'scale(0.91)' },
+            },
+            pulseSubtle: {
+              '0%, 100%': { transform: 'scale(1)', filter: 'drop-shadow(0 10px 15px rgba(245, 158, 11, 0.3))' },
+              '50%': { transform: 'scale(1.02)', filter: 'drop-shadow(0 20px 25px rgba(245, 158, 11, 0.5))' },
+            },
+            floatSlow: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-10px)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    * {
+      cursor: url('IMG_5715-removebg-preview.png') 12 12, auto !important;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Outfit', sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+      overflow-x: hidden;
+    }
+    .font-heading {
+      font-family: 'Fredoka', sans-serif;
+    }
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+    }
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #fef3c7;
+      border-radius: 8px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #f59e0b;
+      border-radius: 8px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #d97706;
+    }
+    
+    .click-particle {
+      position: fixed;
+      pointer-events: none;
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 800;
+      color: #fffbeb;
+      text-shadow: 
+        -2px -2px 0 #78350f,  
+         2px -2px 0 #78350f,
+        -2px  2px 0 #78350f,
+         2px  2px 0 #78350f,
+         0px  4px 12px rgba(245, 158, 11, 0.8);
+      z-index: 999;
+      animation: popAndFloat 0.85s cubic-bezier(0.15, 0.85, 0.35, 1.2) forwards;
+      will-change: transform, opacity;
+    }
+
+    @keyframes popAndFloat {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, 0) scale(0.4) rotate(var(--rot, 0deg));
+      }
+      15% {
+        opacity: 1;
+        transform: translate(-50%, -20px) scale(1.3) rotate(var(--rot, 0deg));
+      }
+      100% {
+        opacity: 0;
+        transform: translate(calc(-50% + var(--dx, 0px)), -90px) scale(0.8) rotate(var(--rot, 0deg));
+      }
+    }
+
+    .ozzy-glow {
+      box-shadow: 0 0 50px rgba(245, 158, 11, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.5);
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      border: 2px solid rgba(251, 191, 36, 0.3);
+    }
+
+    .orbit-ring {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      animation: orbitSpin 12s linear infinite;
+    }
+
+    @keyframes orbitSpin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .orbit-paw {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 50px;
+      height: 50px;
+      margin-top: -25px;
+      margin-left: -25px;
+      animation: pawTap 1.2s ease-in-out infinite alternate;
+      filter: brightness(1.45) contrast(0.9) 
+              drop-shadow(1.5px 0 0 #000) 
+              drop-shadow(-1.5px 0 0 #000) 
+              drop-shadow(0 1.5px 0 #000) 
+              drop-shadow(0 -1.5px 0 #000);
+    }
+
+    @keyframes pawTap {
+      0% { transform: var(--paw-transform) scale(1); }
+      100% { transform: var(--paw-transform) scale(1.25) translateY(-8px); }
+    }
+
+    .stable-scroll {
+      scrollbar-gutter: stable;
+    }
+
+    .angel-glow {
+      box-shadow: 0 0 40px rgba(253, 224, 71, 0.8), inset 0 0 15px rgba(255, 255, 255, 0.9);
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100 min-h-screen text-amber-950 flex flex-col">
+
+  <!-- TOP HEADER -->
+  <header class="bg-amber-500/90 backdrop-blur-md text-white shadow-lg border-b-4 border-amber-600 sticky top-0 z-30 w-full">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-2">
+      <div class="flex items-center space-x-3">
+        <span class="text-3xl animate-bounce">🐾</span>
+        <div>
+          <h1 class="font-heading text-2xl md:text-3xl font-bold tracking-wide drop-shadow">Ozzy Clicker</h1>
+          <p class="text-xs text-amber-100 font-medium">Pet Ozzy & shower him with treats!</p>
+        </div>
+      </div>
+      
+      <div class="flex items-center space-x-2">
+        <button id="prestige-modal-btn" class="bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-amber-950 font-bold px-3 py-2 rounded-xl text-sm transition flex items-center gap-1 shadow-md border border-yellow-200">
+          ✨ <span class="hidden sm:inline">Rebirth</span>
+        </button>
+        <button id="save-modal-btn" class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded-xl text-sm font-semibold transition flex items-center gap-1 shadow-sm border border-amber-400/40">
+          💾 <span class="hidden sm:inline">Save/Load</span>
+        </button>
+        <button id="sound-toggle-btn" class="bg-amber-600 hover:bg-amber-700 text-white p-2 rounded-xl text-sm font-semibold transition flex items-center gap-1 shadow-sm border border-amber-400/40">
+          <span id="sound-icon">🔊</span> <span class="hidden sm:inline" id="sound-text">Sound ON</span>
+        </button>
+        <button id="stats-modal-btn" class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded-xl text-sm font-semibold transition flex items-center gap-1 shadow-sm border border-amber-400/40">
+          📊 <span class="hidden sm:inline">Stats</span>
+        </button>
+        <button id="reset-game-btn" class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-xl text-sm font-semibold transition flex items-center gap-1 shadow-sm border border-red-400/40">
+          🔄 <span class="hidden sm:inline">Reset</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN GAME CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+    <!-- LEFT COLUMN: SCORE & OZZY CLICKER AREA -->
+    <section class="lg:col-span-7 flex flex-col items-center justify-center gap-4 w-full min-w-0">
+
+      <!-- SCORE DISPLAY BANNER -->
+      <div class="w-full glass-card rounded-3xl p-6 text-center shadow-xl relative overflow-hidden min-w-0">
+        <div class="absolute -top-10 -left-10 w-32 h-32 bg-amber-200/50 rounded-full blur-2xl"></div>
+        <div class="absolute -bottom-10 -right-10 w-32 h-32 bg-orange-300/40 rounded-full blur-2xl"></div>
+
+        <div class="flex justify-center items-center gap-2 mb-1">
+          <p class="text-sm font-bold uppercase tracking-wider text-amber-700">Total Balance</p>
+          <span id="prestige-badge" class="hidden text-xs bg-yellow-300 border border-yellow-500 text-amber-950 font-extrabold px-2 py-0.5 rounded-full shadow-sm">
+            ✨ Level 0 Prestige (+0% Boost)
+          </span>
+        </div>
+
+        <div class="flex items-center justify-center gap-2 overflow-hidden">
+          <span class="text-3xl md:text-5xl shrink-0">🦴</span>
+          <h2 id="score-display" class="font-heading text-4xl md:text-6xl font-extrabold text-amber-900 tracking-tight tabular-nums truncate">
+            0
+          </h2>
+        </div>
+        <p class="text-amber-800 font-bold text-lg md:text-xl mt-1">Ozzy Coins</p>
+
+        <!-- STATS BADGES -->
+        <div class="mt-4 grid grid-cols-2 gap-3 max-w-md mx-auto">
+          <div class="bg-amber-100/80 border border-amber-300/70 rounded-2xl p-2.5 flex flex-col items-center shadow-inner">
+            <span class="text-xs text-amber-700 font-semibold uppercase">Per Second (CPS)</span>
+            <span id="cps-display" class="font-heading text-xl md:text-2xl font-bold text-amber-900 tabular-nums">0</span>
+          </div>
+          <div class="bg-amber-100/80 border border-amber-300/70 rounded-2xl p-2.5 flex flex-col items-center shadow-inner">
+            <span class="text-xs text-amber-700 font-semibold uppercase">Per Click (CPC)</span>
+            <span id="cpc-display" class="font-heading text-xl md:text-2xl font-bold text-amber-900 tabular-nums">1</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CLICKABLE OZZY IMAGE CONTAINER -->
+      <div class="relative flex flex-col items-center justify-center w-full py-2 min-w-0">
+        <div class="absolute w-72 h-72 md:w-96 md:h-96 rounded-full bg-gradient-to-tr from-amber-300 via-orange-300 to-yellow-200 opacity-60 blur-xl animate-pulse-subtle -z-10"></div>
+        
+        <div id="ozzy-click-area" class="relative cursor-pointer group touch-manipulation transform active:scale-95 transition-transform duration-75 my-2">
+          <div id="orbit-ring" class="orbit-ring"></div>
+          <div class="w-64 h-64 md:w-80 md:h-80 rounded-full p-3 bg-gradient-to-b from-amber-300 via-amber-400 to-amber-600 shadow-2xl ozzy-glow relative border-4 border-white/80">
+            <img 
+              id="ozzy-img" 
+              src="ozzy.jpg" 
+              alt="Ozzy the Dog" 
+              class="w-full h-full object-cover rounded-full shadow-inner select-none pointer-events-none group-hover:brightness-105 transition-all duration-200"
+              onerror="this.src='https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=600&q=80'; this.onerror=null;"
+            >
+          </div>
+        </div>
+
+        <p id="ozzy-status" class="mt-6 text-center font-heading text-lg font-medium text-amber-800 bg-amber-200/60 px-4 py-1.5 rounded-full border border-amber-300">
+          Ozzy is waiting for belly rubs! ❤️
+        </p>
+      </div>
+
+      <div class="w-full text-center text-xs text-amber-800/80 pb-2 flex justify-between items-center px-4">
+        <span id="save-status" class="flex items-center gap-1">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-ping"></span>
+          Auto-saved
+        </span>
+        <span>Tip: Reach 100 of all buildings to unlock Rebirth & massive permanent buffs!</span>
+      </div>
+
+    </section>
+
+    <!-- RIGHT COLUMN: SHOP SIDEBAR -->
+    <section class="lg:col-span-5 flex flex-col gap-4 w-full min-w-0">
+      
+      <div class="glass-card rounded-3xl p-4 shadow-xl flex flex-col h-[750px] w-full min-w-0">
+        <div class="flex items-center justify-between pb-3 border-b-2 border-amber-200/80 mb-3 gap-2">
+          <h3 class="font-heading text-2xl font-extrabold text-amber-900 flex items-center gap-2 shrink-0">
+            🛒 Ozzy's Store
+          </h3>
+          <span id="unlocked-count" class="text-xs bg-amber-200 text-amber-800 font-bold px-2.5 py-1 rounded-full shrink-0">
+            0 Upgrades
+          </span>
+        </div>
+
+        <!-- BUY MULTIPLIER CONTROLS -->
+        <div class="flex items-center justify-between bg-amber-200/70 p-1.5 rounded-2xl mb-3 border border-amber-300/80">
+          <span class="text-xs font-bold text-amber-900 px-2 uppercase tracking-wide">Buy Amount:</span>
+          <div class="flex gap-1">
+            <button id="mult-1-btn" onclick="setBuyMultiplier(1)" class="px-2.5 py-1 rounded-xl text-xs font-heading font-extrabold transition bg-amber-500 text-white shadow-sm">x1</button>
+            <button id="mult-10-btn" onclick="setBuyMultiplier(10)" class="px-2.5 py-1 rounded-xl text-xs font-heading font-extrabold transition text-amber-900 hover:bg-amber-300">x10</button>
+            <button id="mult-100-btn" onclick="setBuyMultiplier(100)" class="px-2.5 py-1 rounded-xl text-xs font-heading font-extrabold transition text-amber-900 hover:bg-amber-300">x100</button>
+            <button id="mult-1000-btn" onclick="setBuyMultiplier(1000)" class="px-2.5 py-1 rounded-xl text-xs font-heading font-extrabold transition text-amber-900 hover:bg-amber-300">x1000</button>
+          </div>
+        </div>
+
+        <!-- TABS BUTTONS -->
+        <div class="flex bg-amber-200/60 p-1 rounded-2xl mb-3 shrink-0">
+          <button id="tab-buildings-btn" class="flex-1 py-2 rounded-xl font-heading font-bold text-sm transition bg-amber-500 text-white shadow-sm">
+            🏠 Buildings (CPS)
+          </button>
+          <button id="tab-clicks-btn" class="flex-1 py-2 rounded-xl font-heading font-bold text-sm transition text-amber-800 hover:text-amber-900">
+            🖐️ Click Upgrades
+          </button>
+        </div>
+
+        <!-- TAB 1: BUILDINGS -->
+        <div id="tab-buildings" class="flex-1 overflow-y-scroll stable-scroll space-y-3 pr-1"></div>
+
+        <!-- TAB 2: CLICK UPGRADES -->
+        <div id="tab-clicks" class="flex-1 overflow-y-scroll stable-scroll space-y-3 pr-1 hidden"></div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- PRESTIGE / ASCENSION MODAL -->
+  <div id="prestige-modal" class="fixed inset-0 bg-amber-950/75 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-gradient-to-b from-amber-50 via-yellow-50 to-amber-100 border-4 border-yellow-400 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative animate-in fade-in zoom-in duration-150 text-center">
+      <button id="close-prestige-btn" class="absolute top-4 right-4 text-amber-700 hover:text-amber-900 font-bold text-xl bg-yellow-200 w-8 h-8 rounded-full flex items-center justify-center shadow-sm">
+        ✕
+      </button>
+
+      <!-- WISE ANGEL OZZY HEADER -->
+      <div class="relative flex flex-col items-center justify-center my-2">
+        <div class="w-40 h-40 rounded-full p-2 bg-gradient-to-tr from-yellow-300 via-amber-400 to-yellow-200 angel-glow mb-3 animate-float-slow flex items-center justify-center overflow-hidden">
+          <div id="angel-ozzy-container" class="w-full h-full flex items-center justify-center">
+            <img 
+              id="angel-ozzy-img" 
+              src="ozzyangel.png" 
+              alt="Angel Ozzy" 
+              class="w-full h-full object-cover rounded-full select-none pointer-events-none drop-shadow-md"
+              onerror="this.src='data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhYZC...'; this.onerror=null;"
+            >
+          </div>
+        </div>
+        <h3 class="font-heading text-2xl md:text-3xl font-black text-amber-950 tracking-tight flex items-center gap-2">
+          ✨ Divine Ozzy's Wisdom
+        </h3>
+      </div>
+
+      <!-- WISE WORDS DIALOGUE BOX -->
+      <div class="bg-yellow-100/90 border-2 border-yellow-300/80 rounded-2xl p-4 my-3 text-amber-950 shadow-inner">
+        <p class="text-xs font-bold uppercase tracking-wider text-amber-700 mb-1">💬 Holy Bark of Enlightenment</p>
+        <p id="wise-quote" class="font-heading italic text-base md:text-lg text-amber-900">
+          "To hoard treats is human; to chase the eternal stick and begin anew is divine."
+        </p>
+      </div>
+
+      <!-- REBIRTH BUFF DETAILS -->
+      <div class="bg-amber-200/60 border border-amber-300 rounded-2xl p-3 text-left space-y-2 mb-4">
+        <div class="flex justify-between items-center text-xs md:text-sm font-bold text-amber-950">
+          <span>Current Prestige Level:</span>
+          <span id="current-prestige-lvl" class="text-amber-800">0</span>
+        </div>
+        <div class="flex justify-between items-center text-xs md:text-sm font-bold text-amber-950">
+          <span>Permanent Multiplier Buff:</span>
+          <span id="prestige-buff-text" class="text-emerald-700 font-extrabold">+0.5x multiplier (+50%)</span>
+        </div>
+        <div class="flex justify-between items-center text-xs md:text-sm font-bold text-amber-950">
+          <span>Rebirth Requirement:</span>
+          <span id="prestige-req-status" class="text-amber-900 font-black">100 of ALL buildings</span>
+        </div>
+        <p class="text-[11px] text-amber-800 border-t border-amber-300/80 pt-2 leading-relaxed">
+          ⚠️ <span class="font-bold">Rebirth resets:</span> Coins, Click Power, and Building Counts. <br>
+          ⚡ <span class="font-bold">You gain:</span> A permanent <strong class="text-amber-950">+0.5x earnings multiplier</strong> added to all future clicks and CPS!
+        </p>
+      </div>
+
+      <button id="confirm-prestige-btn" disabled class="w-full bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-500 text-amber-950 font-heading font-black text-lg py-3 rounded-2xl shadow-xl transition transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+        🔒 Own 100 of each building to Rebirth!
+      </button>
+    </div>
+  </div>
+
+  <!-- SAVE / LOAD MODAL -->
+  <div id="save-modal" class="fixed inset-0 bg-amber-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-amber-50 border-4 border-amber-400 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative animate-in fade-in zoom-in duration-150">
+      <button id="close-save-btn" class="absolute top-4 right-4 text-amber-700 hover:text-amber-900 font-bold text-xl bg-amber-200 w-8 h-8 rounded-full flex items-center justify-center">
+        ✕
+      </button>
+
+      <h3 class="font-heading text-2xl font-extrabold text-amber-900 mb-2 flex items-center gap-2">
+        💾 Export / Import Save
+      </h3>
+      <p class="text-xs text-amber-800 mb-4">Copy your save code to back it up or paste a saved code below to restore progress.</p>
+
+      <div class="mb-5">
+        <label class="block text-xs font-bold text-amber-900 uppercase mb-1">Export Save Code</label>
+        <div class="flex gap-2">
+          <input id="export-code-input" readonly type="text" class="flex-1 bg-amber-100 border border-amber-300 rounded-xl px-3 py-2 text-xs font-mono text-amber-950 select-all" />
+          <button id="copy-export-btn" class="bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition shrink-0">
+            Copy
+          </button>
+        </div>
+      </div>
+
+      <div class="mb-2">
+        <label class="block text-xs font-bold text-amber-900 uppercase mb-1">Import Save Code / Cheat Code</label>
+        <textarea id="import-code-input" rows="3" placeholder="Paste save code or enter secret code..." class="w-full bg-white border border-amber-300 rounded-xl p-3 text-xs font-mono text-amber-950 focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
+        <button id="apply-import-btn" class="w-full mt-2 bg-emerald-600 hover:bg-emerald-700 text-white font-heading font-bold text-sm py-2.5 rounded-xl shadow-md transition">
+          📥 Load Save Data / Activate
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS MODAL -->
+  <div id="stats-modal" class="fixed inset-0 bg-amber-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-amber-50 border-4 border-amber-400 rounded-3xl max-w-md w-full p-6 shadow-2xl relative animate-in fade-in zoom-in duration-150">
+      <button id="close-stats-btn" class="absolute top-4 right-4 text-amber-700 hover:text-amber-900 font-bold text-xl bg-amber-200 w-8 h-8 rounded-full flex items-center justify-center">
+        ✕
+      </button>
+
+      <h3 class="font-heading text-2xl font-extrabold text-amber-900 mb-4 flex items-center gap-2">
+        📊 Ozzy Statistics
+      </h3>
+
+      <div class="space-y-3 text-sm text-amber-900">
+        <div class="flex justify-between py-2 border-b border-amber-200">
+          <span class="text-amber-700 font-medium">Prestige / Rebirth Level:</span>
+          <span id="stat-prestige-level" class="font-bold tabular-nums">0</span>
+        </div>
+        <div class="flex justify-between py-2 border-b border-amber-200">
+          <span class="text-amber-700 font-medium">Total Ozzy Coins Earned:</span>
+          <span id="stat-total-coins" class="font-bold tabular-nums">0</span>
+        </div>
+        <div class="flex justify-between py-2 border-b border-amber-200">
+          <span class="text-amber-700 font-medium">Total Manual Clicks:</span>
+          <span id="stat-total-clicks" class="font-bold tabular-nums">0</span>
+        </div>
+        <div class="flex justify-between py-2 border-b border-amber-200">
+          <span class="text-amber-700 font-medium">Coins Earned from Clicks:</span>
+          <span id="stat-click-coins" class="font-bold tabular-nums">0</span>
+        </div>
+        <div class="flex justify-between py-2 border-b border-amber-200">
+          <span class="text-amber-700 font-medium">Total Buildings Owned:</span>
+          <span id="stat-total-buildings" class="font-bold tabular-nums">0</span>
+        </div>
+        <div class="flex justify-between py-2 border-b border-amber-200">
+          <span class="text-amber-700 font-medium">Time Played:</span>
+          <span id="stat-time-played" class="font-bold tabular-nums">0m 0s</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OFFLINE EARNINGS MODAL -->
+  <div id="offline-modal" class="fixed inset-0 bg-amber-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-amber-50 border-4 border-amber-400 rounded-3xl max-w-md w-full p-6 shadow-2xl text-center">
+      <div class="text-5xl mb-2">😴 🐾 🦴</div>
+      <h3 class="font-heading text-2xl font-extrabold text-amber-900 mb-2">Welcome Back!</h3>
+      <p class="text-sm text-amber-800 mb-4">While you were away, Ozzy was busy earning treats for you!</p>
+      
+      <div class="bg-amber-200/80 border border-amber-300 rounded-2xl p-4 mb-6">
+        <p class="text-xs text-amber-700 font-bold uppercase mb-1">Offline Earnings</p>
+        <p id="offline-amount" class="font-heading text-3xl font-black text-amber-900 tabular-nums">+0 Coins</p>
+        <p id="offline-time" class="text-xs text-amber-700 mt-1">Away for 0 minutes</p>
+      </div>
+
+      <button id="claim-offline-btn" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-heading font-extrabold text-lg py-3 rounded-2xl shadow-lg transition transform active:scale-95">
+        Collect Coins! 🎉
+      </button>
+    </div>
+  </div>
+
+  <!-- GAME LOGIC SCRIPT -->
+  <script>
+    const DEFAULT_STATE = {
+      coins: 0,
+      totalCoinsEarned: 0,
+      totalClicks: 0,
+      clickCoinsEarned: 0,
+      clickPower: 1,
+      buyMultiplier: 1,
+      prestigeLevel: 0,
+      startTime: Date.now(),
+      lastTick: Date.now(),
+      soundEnabled: true,
+      clickUpgrades: {
+        betterScratches: { id: 'betterScratches', name: 'Better Scratches', icon: '🖐️', desc: 'Fingernail technique! +1 per click.', level: 0, baseCost: 15, costMult: 1.5, powerAdd: 1 },
+        kibbleEnergy: { id: 'kibbleEnergy', name: 'Crunchy Kibble Energy', icon: '🥣', desc: 'Kibble powered scratching! +3 per click.', level: 0, baseCost: 50, costMult: 1.55, powerAdd: 3 },
+        bellyRubs: { id: 'bellyRubs', name: 'Belly Rubs', icon: '🫳', desc: 'Ozzy loves belly rubs! +12 per click.', level: 0, baseCost: 200, costMult: 1.6, powerAdd: 12 },
+        laserPointer: { id: 'laserPointer', name: 'Laser Pointer', icon: '🔴', desc: 'Hypnotic red dot! +45 per click.', level: 0, baseCost: 1000, costMult: 1.65, powerAdd: 45 },
+        gourmetTreats: { id: 'gourmetTreats', name: 'Gourmet Treats', icon: '🥩', desc: 'Prime rib snacks! +180 per click.', level: 0, baseCost: 6500, costMult: 1.7, powerAdd: 180 },
+        goldenGlove: { id: 'goldenGlove', name: 'Golden Scratch Glove', icon: '🥊', desc: 'Luxurious velvet scratching! +800 per click.', level: 0, baseCost: 40000, costMult: 1.75, powerAdd: 800 },
+        massageChair: { id: 'massageChair', name: 'Doggy Massage Chair', icon: '🪑', desc: 'Vibrating bliss! +3,500 per click.', level: 0, baseCost: 250000, costMult: 1.8, powerAdd: 3500 },
+        barkLoudspeaker: { id: 'barkLoudspeaker', name: 'Bark Loudspeaker', icon: '📢', desc: 'Amplified barking enthusiasm! +20,000 per click.', level: 0, baseCost: 1800000, costMult: 1.85, powerAdd: 20000 },
+        infinityLeash: { id: 'infinityLeash', name: 'Infinity Leash', icon: '🌌', desc: 'Cosmic walkies! +120,000 per click.', level: 0, baseCost: 12000000, costMult: 1.9, powerAdd: 120000 }
+      },
+      buildings: {
+        cursorPaw: { id: 'cursorPaw', name: 'Paw Cursor', icon: '🐾', desc: 'Extra paw that pets Ozzy automatically.', count: 0, baseCost: 15, baseCps: 0.5, costMult: 1.13 },
+        crunchyKibble: { id: 'crunchyKibble', name: 'Crunchy Kibble Bowl', icon: '🥣', desc: 'Kibble keeps Ozzy energized.', count: 0, baseCost: 50, baseCps: 2.5, costMult: 1.13 },
+        dispenser: { id: 'dispenser', name: 'Treat Dispenser', icon: '🦴', desc: 'Drops kibble automatically.', count: 0, baseCost: 250, baseCps: 12, costMult: 1.13 },
+        dogBed: { id: 'dogBed', name: 'Cozy Dog Bed', icon: '🛏️', desc: 'Restful naps boost productivity.', count: 0, baseCost: 1200, baseCps: 60, costMult: 1.13 },
+        squeakyToy: { id: 'squeakyToy', name: 'Squeaky Toy', icon: '🧸', desc: 'Generates constant happiness.', count: 0, baseCost: 7500, baseCps: 350, costMult: 1.13 },
+        park: { id: 'park', name: 'Backyard Park', icon: '🌳', desc: 'Zoomies and coin hunting.', count: 0, baseCost: 45000, baseCps: 2000, costMult: 1.13 },
+        doggySpa: { id: 'doggySpa', name: 'Doggy Daycare & Spa', icon: '🛁', desc: 'Professional pampering.', count: 0, baseCost: 250000, baseCps: 10000, costMult: 1.13 },
+        doggyMansion: { id: 'doggyMansion', name: 'Doggy Mansion', icon: '🏰', desc: 'A giant estate filled with tennis balls.', count: 0, baseCost: 1200000, baseCps: 50000, costMult: 1.13 },
+        themePark: { id: 'themePark', name: 'Ozzy Theme Park', icon: '🎡', desc: 'Rollercoasters and endless bone stands.', count: 0, baseCost: 7500000, baseCps: 300000, costMult: 1.13 },
+        cosmicToy: { id: 'cosmicToy', name: 'Cosmic Chew Toy', icon: '🪐', desc: 'Harnesses stellar energy for treats.', count: 0, baseCost: 50000000, baseCps: 2000000, costMult: 1.14 },
+        barkMetaverse: { id: 'barkMetaverse', name: 'Bark Metaverse', icon: '🌐', desc: 'Virtual reality treats for millions of Ozzy clones.', count: 0, baseCost: 350000000, baseCps: 15000000, costMult: 1.14 }
+      }
+    };
+
+    let state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+
+    const STATUS_MESSAGES = [
+      "Ozzy is waiting for belly rubs! ❤️",
+      "Ozzy wags his tail happily! 🐾",
+      "Ozzy is dreaming about giant bones! 🦴",
+      "Ozzy does a little happy dance! 🕺🐶",
+      "Ozzy got the zoomies! ⚡",
+      "Ozzy thinks you're the best human ever! 👑"
+    ];
+
+    const WISE_OZZY_QUOTES = [
+      "\"To hoard treats is human; to chase the eternal stick and begin anew is divine.\"",
+      "\"The leash that binds you to earth can only be broken by 100 bowls of every kibble.\"",
+      "\"He who scratches the belly of destiny shall walk through the golden gates of Rebirth.\"",
+      "\"Material treats fade away, but a +0.5x multiplier shines forever in doggy heaven.\"",
+      "\"Bark loudly, tread lightly, and never fear starting your journey once more.\"",
+      "\"True wisdom is knowing that every tail wag gets faster with every Ascension.\""
+    ];
+
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function initAudio() {
+      if (!audioCtx) audioCtx = new AudioContext();
+    }
+
+    function playClickSound() {
+      if (!state.soundEnabled) return;
+      try {
+        initAudio();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(300 + Math.random() * 150, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(600, audioCtx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.08);
+      } catch (e) {}
+    }
+
+    function playBuySound() {
+      if (!state.soundEnabled) return;
+      try {
+        initAudio();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.15);
+      } catch (e) {}
+    }
+
+    function getPrestigeMultiplier() {
+      return 1 + (state.prestigeLevel * 0.5);
+    }
+
+    function formatNumber(num) {
+      if (num < 1000) return Math.floor(num * 10) / 10 % 1 === 0 ? Math.floor(num).toLocaleString() : num.toFixed(1);
+      const suffixes = ['', 'K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp', 'Oc', 'No', 'Dc'];
+      const i = Math.floor(Math.log10(num) / 3);
+      if (i >= suffixes.length) return num.toExponential(2);
+      return `${(num / Math.pow(10, i * 3)).toFixed(2)} ${suffixes[i]}`;
+    }
+
+    function calculateBulkBuildingCost(b, amount) {
+      let total = 0;
+      for (let i = 0; i < amount; i++) {
+        total += Math.floor(b.baseCost * Math.pow(b.costMult, b.count + i));
+      }
+      return total;
+    }
+
+    function calculateBulkUpgradeCost(u, amount) {
+      let total = 0;
+      for (let i = 0; i < amount; i++) {
+        total += Math.floor(u.baseCost * Math.pow(u.costMult, u.level + i));
+      }
+      return total;
+    }
+
+    function getTotalCps() {
+      let baseCps = 0;
+      for (const key in state.buildings) {
+        baseCps += state.buildings[key].count * state.buildings[key].baseCps;
+      }
+      return baseCps * getPrestigeMultiplier();
+    }
+
+    function getEffectiveClickPower() {
+      return state.clickPower * getPrestigeMultiplier();
+    }
+
+    function checkPrestigeEligibility() {
+      let totalTypes = 0;
+      let eligibleTypes = 0;
+
+      for (const key in state.buildings) {
+        totalTypes++;
+        if (state.buildings[key].count >= 100) {
+          eligibleTypes++;
+        }
+      }
+      return { eligible: eligibleTypes === totalTypes, current: eligibleTypes, total: totalTypes };
+    }
+
+    function setBuyMultiplier(mult) {
+      state.buyMultiplier = mult;
+      [1, 10, 100, 1000].forEach(m => {
+        const btn = document.getElementById(`mult-${m}-btn`);
+        if (btn) {
+          if (m === mult) {
+            btn.className = "px-2.5 py-1 rounded-xl text-xs font-heading font-extrabold transition bg-amber-500 text-white shadow-sm";
+          } else {
+            btn.className = "px-2.5 py-1 rounded-xl text-xs font-heading font-extrabold transition text-amber-900 hover:bg-amber-300";
+          }
+        }
+      });
+      updateShopItems();
+    }
+
+    function updateOrbitingPawCursors() {
+      const ring = document.getElementById('orbit-ring');
+      const cursorCount = state.buildings.cursorPaw ? state.buildings.cursorPaw.count : 0;
+      const numPaws = Math.min(12, cursorCount);
+      
+      if (ring.children.length !== numPaws) {
+        ring.innerHTML = '';
+        const radius = 205;
+        for (let i = 0; i < numPaws; i++) {
+          const angle = (i * (360 / numPaws)) * (Math.PI / 180);
+          const x = Math.cos(angle) * radius;
+          const y = Math.sin(angle) * radius;
+          const rotateDeg = (i * (360 / numPaws)) + 90;
+
+          const paw = document.createElement('img');
+          paw.src = 'IMG_5715-removebg-preview.png';
+          paw.className = 'orbit-paw select-none pointer-events-none';
+          paw.style.setProperty('--paw-transform', `translate(${x}px, ${y}px) rotate(${rotateDeg}deg)`);
+          paw.style.animationDelay = `${(i * 0.15)}s`;
+          ring.appendChild(paw);
+        }
+      }
+    }
+
+    function updateDisplay() {
+      document.getElementById('score-display').innerText = formatNumber(state.coins);
+      document.getElementById('cps-display').innerText = formatNumber(getTotalCps());
+      document.getElementById('cpc-display').innerText = formatNumber(getEffectiveClickPower());
+
+      const prestigeBadge = document.getElementById('prestige-badge');
+      if (state.prestigeLevel > 0) {
+        prestigeBadge.classList.remove('hidden');
+        prestigeBadge.innerText = `✨ Lvl ${state.prestigeLevel} Prestige (+${(state.prestigeLevel * 50)}% Boost)`;
+      } else {
+        prestigeBadge.classList.add('hidden');
+      }
+
+      let totalBought = 0;
+      for (let k in state.buildings) totalBought += state.buildings[k].count;
+      for (let k in state.clickUpgrades) totalBought += state.clickUpgrades[k].level;
+      document.getElementById('unlocked-count').innerText = `${totalBought} Upgrades`;
+
+      const total = state.totalCoinsEarned;
+      let msgIdx = 0;
+      if (total > 1000000) msgIdx = 5;
+      else if (total > 100000) msgIdx = 4;
+      else if (total > 10000) msgIdx = 3;
+      else if (total > 1000) msgIdx = 2;
+      else if (total > 100) msgIdx = 1;
+      document.getElementById('ozzy-status').innerText = STATUS_MESSAGES[msgIdx];
+
+      updateShopItems();
+      updateOrbitingPawCursors();
+    }
+
+    function initShop() {
+      const bContainer = document.getElementById('tab-buildings');
+      bContainer.innerHTML = '';
+      for (const key in state.buildings) {
+        const b = state.buildings[key];
+        const card = document.createElement('div');
+        card.id = `building-card-${key}`;
+        card.className = `p-3 rounded-2xl border-2 transition-all flex items-center justify-between gap-2 bg-amber-50/50 border-amber-200/60 opacity-75 min-w-0`;
+        card.innerHTML = `
+          <div class="flex items-center gap-3 min-w-0 flex-1">
+            <div class="text-3xl bg-amber-200 p-2.5 rounded-2xl shadow-inner shrink-0">${b.icon}</div>
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-2">
+                <h4 class="font-heading font-bold text-amber-950 text-base truncate">${b.name}</h4>
+                <span id="building-count-${key}" class="text-xs bg-amber-300/80 text-amber-900 font-extrabold px-2 py-0.5 rounded-full shrink-0 tabular-nums">x0</span>
+              </div>
+              <p class="text-xs text-amber-800 truncate">${b.desc}</p>
+              <p class="text-xs font-semibold text-amber-700 mt-0.5 truncate">
+                +${formatNumber(b.baseCps * getPrestigeMultiplier())} CPS each <span id="building-total-${key}" class="text-amber-900 tabular-nums">(0 total)</span>
+              </p>
+            </div>
+          </div>
+          <button 
+            id="building-btn-${key}"
+            onclick="buyBuilding('${key}')"
+            disabled
+            class="px-3 py-2 rounded-xl font-heading font-bold text-xs whitespace-nowrap transition transform active:scale-95 flex flex-col items-center justify-center w-[95px] shrink-0 bg-amber-200/80 text-amber-500 cursor-not-allowed"
+          >
+            <span id="building-buy-label-${key}">BUY x1</span>
+            <span id="building-cost-${key}" class="text-[11px] opacity-90 tabular-nums">🦴 0</span>
+          </button>
+        `;
+        bContainer.appendChild(card);
+      }
+
+      const cContainer = document.getElementById('tab-clicks');
+      cContainer.innerHTML = '';
+      for (const key in state.clickUpgrades) {
+        const u = state.clickUpgrades[key];
+        const card = document.createElement('div');
+        card.id = `upgrade-card-${key}`;
+        card.className = `p-3 rounded-2xl border-2 transition-all flex items-center justify-between gap-2 bg-amber-50/50 border-amber-200/60 opacity-75 min-w-0`;
+        card.innerHTML = `
+          <div class="flex items-center gap-3 min-w-0 flex-1">
+            <div class="text-3xl bg-amber-200 p-2.5 rounded-2xl shadow-inner shrink-0">${u.icon}</div>
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-2">
+                <h4 class="font-heading font-bold text-amber-950 text-base truncate">${u.name}</h4>
+                <span id="upgrade-level-${key}" class="text-xs bg-amber-300/80 text-amber-900 font-extrabold px-2 py-0.5 rounded-full shrink-0 tabular-nums">Lvl 0</span>
+              </div>
+              <p class="text-xs text-amber-800 truncate">${u.desc}</p>
+            </div>
+          </div>
+          <button 
+            id="upgrade-btn-${key}"
+            onclick="buyUpgrade('${key}')"
+            disabled
+            class="px-3 py-2 rounded-xl font-heading font-bold text-xs whitespace-nowrap transition transform active:scale-95 flex flex-col items-center justify-center w-[95px] shrink-0 bg-amber-200/80 text-amber-500 cursor-not-allowed"
+          >
+            <span id="upgrade-buy-label-${key}">BUY x1</span>
+            <span id="upgrade-cost-${key}" class="text-[11px] opacity-90 tabular-nums">🦴 0</span>
+          </button>
+        `;
+        cContainer.appendChild(card);
+      }
+    }
+
+    function updateShopItems() {
+      const mult = state.buyMultiplier || 1;
+
+      for (const key in state.buildings) {
+        const b = state.buildings[key];
+        const cost = calculateBulkBuildingCost(b, mult);
+        const canAfford = state.coins >= cost;
+        const card = document.getElementById(`building-card-${key}`);
+        const btn = document.getElementById(`building-btn-${key}`);
+        const countEl = document.getElementById(`building-count-${key}`);
+        const totalEl = document.getElementById(`building-total-${key}`);
+        const costEl = document.getElementById(`building-cost-${key}`);
+        const buyLabelEl = document.getElementById(`building-buy-label-${key}`);
+
+        if (card && btn) {
+          countEl.innerText = `x${b.count}`;
+          if (b.count >= 100) {
+            countEl.className = "text-xs bg-emerald-300 border border-emerald-500 text-emerald-950 font-extrabold px-2 py-0.5 rounded-full shrink-0 tabular-nums";
+          } else {
+            countEl.className = "text-xs bg-amber-300/80 text-amber-900 font-extrabold px-2 py-0.5 rounded-full shrink-0 tabular-nums";
+          }
+          totalEl.innerText = `(${formatNumber(b.count * b.baseCps * getPrestigeMultiplier())} total)`;
+          costEl.innerText = `🦴 ${formatNumber(cost)}`;
+          if (buyLabelEl) buyLabelEl.innerText = `BUY x${mult}`;
+          btn.disabled = !canAfford;
+
+          card.className = `p-3 rounded-2xl border-2 transition-all flex items-center justify-between gap-2 min-w-0 ${
+            canAfford ? 'bg-amber-100/90 border-amber-300 hover:border-amber-500 shadow-sm' : 'bg-amber-50/50 border-amber-200/60 opacity-75'
+          }`;
+          btn.className = `px-3 py-2 rounded-xl font-heading font-bold text-xs whitespace-nowrap transition transform active:scale-95 flex flex-col items-center justify-center w-[95px] shrink-0 ${
+            canAfford ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-md' : 'bg-amber-200/80 text-amber-500 cursor-not-allowed'
+          }`;
+        }
+      }
+
+      for (const key in state.clickUpgrades) {
+        const u = state.clickUpgrades[key];
+        const cost = calculateBulkUpgradeCost(u, mult);
+        const canAfford = state.coins >= cost;
+        const card = document.getElementById(`upgrade-card-${key}`);
+        const btn = document.getElementById(`upgrade-btn-${key}`);
+        const levelEl = document.getElementById(`upgrade-level-${key}`);
+        const costEl = document.getElementById(`upgrade-cost-${key}`);
+        const buyLabelEl = document.getElementById(`upgrade-buy-label-${key}`);
+
+        if (card && btn) {
+          levelEl.innerText = `Lvl ${u.level}`;
+          costEl.innerText = `🦴 ${formatNumber(cost)}`;
+          if (buyLabelEl) buyLabelEl.innerText = `BUY x${mult}`;
+          btn.disabled = !canAfford;
+
+          card.className = `p-3 rounded-2xl border-2 transition-all flex items-center justify-between gap-2 min-w-0 ${
+            canAfford ? 'bg-amber-100/90 border-amber-300 hover:border-amber-500 shadow-sm' : 'bg-amber-50/50 border-amber-200/60 opacity-75'
+          }`;
+          btn.className = `px-3 py-2 rounded-xl font-heading font-bold text-xs whitespace-nowrap transition transform active:scale-95 flex flex-col items-center justify-center w-[95px] shrink-0 ${
+            canAfford ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-md' : 'bg-amber-200/80 text-amber-500 cursor-not-allowed'
+          }`;
+        }
+      }
+    }
+
+    function clickOzzy(event) {
+      playClickSound();
+      const earned = getEffectiveClickPower();
+      state.coins += earned;
+      state.totalCoinsEarned += earned;
+      state.clickCoinsEarned += earned;
+      state.totalClicks += 1;
+
+      const ozzyContainer = document.getElementById('ozzy-click-area');
+      ozzyContainer.classList.remove('animate-bounce-short');
+      void ozzyContainer.offsetWidth;
+      ozzyContainer.classList.add('animate-bounce-short');
+
+      spawnParticle(event, `+${formatNumber(earned)}`);
+      updateDisplay();
+    }
+
+    function spawnParticle(event, text) {
+      const particle = document.createElement('div');
+      particle.className = 'click-particle text-2xl md:text-3xl';
+      particle.innerText = text;
+
+      let x, y;
+      if (event && event.clientX) {
+        x = event.clientX;
+        y = event.clientY;
+      } else {
+        const rect = document.getElementById('ozzy-img').getBoundingClientRect();
+        x = rect.left + rect.width / 2;
+        y = rect.top + rect.height / 2;
+      }
+
+      const randomDx = (Math.random() * 70 - 35).toFixed(1);
+      const randomRot = (Math.random() * 30 - 15).toFixed(1);
+
+      particle.style.setProperty('--dx', `${randomDx}px`);
+      particle.style.setProperty('--rot', `${randomRot}deg`);
+      particle.style.left = `${x}px`;
+      particle.style.top = `${y}px`;
+
+      document.body.appendChild(particle);
+
+      setTimeout(() => particle.remove(), 850);
+    }
+
+    function buyBuilding(key) {
+      const b = state.buildings[key];
+      const mult = state.buyMultiplier || 1;
+      const cost = calculateBulkBuildingCost(b, mult);
+      if (state.coins >= cost) {
+        state.coins -= cost;
+        b.count += mult;
+        playBuySound();
+        updateDisplay();
+      }
+    }
+
+    function buyUpgrade(key) {
+      const u = state.clickUpgrades[key];
+      const mult = state.buyMultiplier || 1;
+      const cost = calculateBulkUpgradeCost(u, mult);
+      if (state.coins >= cost) {
+        state.coins -= cost;
+        u.level += mult;
+        state.clickPower += u.powerAdd * mult;
+        playBuySound();
+        updateDisplay();
+      }
+    }
+
+    function openPrestigeModal() {
+      const modal = document.getElementById('prestige-modal');
+      const quoteEl = document.getElementById('wise-quote');
+      const lvlEl = document.getElementById('current-prestige-lvl');
+      const buffEl = document.getElementById('prestige-buff-text');
+      const reqEl = document.getElementById('prestige-req-status');
+      const confirmBtn = document.getElementById('confirm-prestige-btn');
+
+      const randomQuote = WISE_OZZY_QUOTES[Math.floor(Math.random() * WISE_OZZY_QUOTES.length)];
+      quoteEl.innerText = randomQuote;
+
+      const eligibility = checkPrestigeEligibility();
+      lvlEl.innerText = state.prestigeLevel;
+      
+      const nextLevel = state.prestigeLevel + 1;
+      const nextBoost = (nextLevel * 50);
+      buffEl.innerText = `+${(nextBoost)}% Boost (x${(1 + nextLevel * 0.5).toFixed(1)} multiplier)`;
+
+      if (eligibility.eligible) {
+        reqEl.innerHTML = `<span class="text-emerald-700">✅ All ${eligibility.total}/${eligibility.total} Buildings Ready (100+)</span>`;
+        confirmBtn.disabled = false;
+        confirmBtn.innerText = `✨ ASCEND NOW TO PRESTIGE LEVEL ${nextLevel}! ✨`;
+        confirmBtn.className = "w-full bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-500 text-amber-950 font-heading font-black text-lg py-3 rounded-2xl shadow-xl transition transform hover:scale-[1.02] active:scale-95 cursor-pointer animate-pulse";
+      } else {
+        reqEl.innerHTML = `<span class="text-amber-900">${eligibility.current}/${eligibility.total} Buildings at 100+</span>`;
+        confirmBtn.disabled = true;
+        confirmBtn.innerText = `🔒 Reach 100 of ALL buildings (${eligibility.current}/${eligibility.total} ready)`;
+        confirmBtn.className = "w-full bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-500 text-amber-950 font-heading font-black text-lg py-3 rounded-2xl shadow-xl transition transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed";
+      }
+
+      modal.classList.remove('hidden');
+    }
+
+    function executePrestige() {
+      const eligibility = checkPrestigeEligibility();
+      if (!eligibility.eligible) return;
+
+      if (confirm("✨ Divine Ozzy is ready to grant you celestial powers! Are you sure you want to Rebirth? Your buildings and coins will reset, but your earnings will be permanently boosted!")) {
+        state.prestigeLevel += 1;
+        state.coins = 0;
+        state.clickPower = 1;
+
+        for (let k in state.buildings) {
+          state.buildings[k].count = 0;
+        }
+
+        for (let k in state.clickUpgrades) {
+          state.clickUpgrades[k].level = 0;
+        }
+
+        saveGame();
+        initShop();
+        setBuyMultiplier(state.buyMultiplier || 1);
+        updateDisplay();
+
+        document.getElementById('prestige-modal').classList.add('hidden');
+        alert(`🎉 REBIRTH COMPLETE! You are now Prestige Level ${state.prestigeLevel}! Earnings multiplier increased to x${getPrestigeMultiplier().toFixed(1)}! 🐶✨`);
+      }
+    }
+
+    function gameTick() {
+      const now = Date.now();
+      const delta = (now - state.lastTick) / 1000;
+      state.lastTick = now;
+
+      const cps = getTotalCps();
+      if (cps > 0) {
+        const earned = cps * delta;
+        state.coins += earned;
+        state.totalCoinsEarned += earned;
+      }
+      updateDisplay();
+    }
+
+    const SAVE_KEY = 'ozzy_clicker_save_v1';
+
+    function saveGame() {
+      try {
+        localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+        const statusEl = document.getElementById('save-status');
+        statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span> Saved!`;
+        setTimeout(() => {
+          statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-ping"></span> Auto-saved`;
+        }, 1500);
+      } catch (e) {}
+    }
+
+    function loadGame() {
+      try {
+        const saved = localStorage.getItem(SAVE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          state.coins = parsed.coins || 0;
+          state.totalCoinsEarned = parsed.totalCoinsEarned || 0;
+          state.totalClicks = parsed.totalClicks || 0;
+          state.clickCoinsEarned = parsed.clickCoinsEarned || 0;
+          state.clickPower = parsed.clickPower || 1;
+          state.buyMultiplier = parsed.buyMultiplier || 1;
+          state.prestigeLevel = parsed.prestigeLevel || 0;
+          state.startTime = parsed.startTime || Date.now();
+          state.soundEnabled = parsed.soundEnabled !== undefined ? parsed.soundEnabled : true;
+
+          if (parsed.buildings) {
+            for (let k in parsed.buildings) {
+              if (state.buildings[k]) state.buildings[k].count = parsed.buildings[k].count || 0;
+            }
+          }
+
+          if (parsed.clickUpgrades) {
+            for (let k in parsed.clickUpgrades) {
+              if (state.clickUpgrades[k]) state.clickUpgrades[k].level = parsed.clickUpgrades[k].level || 0;
+            }
+          }
+
+          const lastTick = parsed.lastTick || Date.now();
+          const now = Date.now();
+          const elapsedSec = (now - lastTick) / 1000;
+          state.lastTick = now;
+
+          const cps = getTotalCps();
+          if (elapsedSec > 10 && cps > 0) {
+            const offlineEarned = Math.floor(cps * elapsedSec * 0.8);
+            if (offlineEarned > 0) {
+              state.coins += offlineEarned;
+              state.totalCoinsEarned += offlineEarned;
+              showOfflineModal(offlineEarned, elapsedSec);
+            }
+          }
+        }
+      } catch (e) {}
+    }
+
+    function exportSaveCode() {
+      return btoa(unescape(encodeURIComponent(JSON.stringify(state))));
+    }
+
+    function importSaveCode(codeStr) {
+      const trimmed = codeStr.trim();
+      
+      if (trimmed === "ADM1N123") {
+        state.coins += 1e15;
+        state.totalCoinsEarned += 1e15;
+        for (let k in state.buildings) state.buildings[k].count = 100;
+        saveGame();
+        initShop();
+        setBuyMultiplier(state.buyMultiplier || 1);
+        updateDisplay();
+        alert("🔓 ADMIN CHEAT ACTIVATED! Granted +1 Quadrillion Coins & set 100 of each building! Rebirth is unlocked! 🦴🎉");
+        return true;
+      }
+
+      try {
+        const decoded = decodeURIComponent(escape(atob(trimmed)));
+        const parsed = JSON.parse(decoded);
+        if (typeof parsed.coins === 'number' && parsed.buildings && parsed.clickUpgrades) {
+          state = parsed;
+          state.lastTick = Date.now();
+          saveGame();
+          initShop();
+          setBuyMultiplier(state.buyMultiplier || 1);
+          updateDisplay();
+          return true;
+        }
+      } catch (e) {}
+      return false;
+    }
+
+    function showOfflineModal(amount, seconds) {
+      const minutes = Math.floor(seconds / 60);
+      document.getElementById('offline-amount').innerText = `+${formatNumber(amount)} Coins`;
+      document.getElementById('offline-time').innerText = `Away for ${minutes > 0 ? minutes + ' min ' : ''}${Math.floor(seconds % 60)} sec`;
+      document.getElementById('offline-modal').classList.remove('hidden');
+    }
+
+    function resetGame() {
+      if (confirm("Are you sure you want to reset all game progress? Ozzy will miss his treats! 🐶")) {
+        localStorage.removeItem(SAVE_KEY);
+        state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+        state.lastTick = Date.now();
+        initShop();
+        setBuyMultiplier(1);
+        updateDisplay();
+        alert("Game has been reset!");
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initShop();
+      loadGame();
+      setBuyMultiplier(state.buyMultiplier || 1);
+
+      document.getElementById('ozzy-click-area').addEventListener('click', clickOzzy);
+
+      const tabBuildingsBtn = document.getElementById('tab-buildings-btn');
+      const tabClicksBtn = document.getElementById('tab-clicks-btn');
+      const tabBuildings = document.getElementById('tab-buildings');
+      const tabClicks = document.getElementById('tab-clicks');
+
+      tabBuildingsBtn.addEventListener('click', () => {
+        tabBuildingsBtn.className = "flex-1 py-2 rounded-xl font-heading font-bold text-sm transition bg-amber-500 text-white shadow-sm";
+        tabClicksBtn.className = "flex-1 py-2 rounded-xl font-heading font-bold text-sm transition text-amber-800 hover:text-amber-900";
+        tabBuildings.classList.remove('hidden');
+        tabClicks.classList.add('hidden');
+      });
+
+      tabClicksBtn.addEventListener('click', () => {
+        tabClicksBtn.className = "flex-1 py-2 rounded-xl font-heading font-bold text-sm transition bg-amber-500 text-white shadow-sm";
+        tabBuildingsBtn.className = "flex-1 py-2 rounded-xl font-heading font-bold text-sm transition text-amber-800 hover:text-amber-900";
+        tabClicks.classList.remove('hidden');
+        tabBuildings.classList.add('hidden');
+      });
+
+      document.getElementById('sound-toggle-btn').addEventListener('click', () => {
+        state.soundEnabled = !state.soundEnabled;
+        document.getElementById('sound-icon').innerText = state.soundEnabled ? "🔊" : "🔇";
+        document.getElementById('sound-text').innerText = state.soundEnabled ? "Sound ON" : "Sound OFF";
+      });
+
+      const prestigeModal = document.getElementById('prestige-modal');
+      document.getElementById('prestige-modal-btn').addEventListener('click', openPrestigeModal);
+      document.getElementById('close-prestige-btn').addEventListener('click', () => prestigeModal.classList.add('hidden'));
+      document.getElementById('confirm-prestige-btn').addEventListener('click', executePrestige);
+
+      const saveModal = document.getElementById('save-modal');
+      const exportInput = document.getElementById('export-code-input');
+      
+      document.getElementById('save-modal-btn').addEventListener('click', () => {
+        exportInput.value = exportSaveCode();
+        saveModal.classList.remove('hidden');
+      });
+
+      document.getElementById('close-save-btn').addEventListener('click', () => saveModal.classList.add('hidden'));
+
+      document.getElementById('copy-export-btn').addEventListener('click', () => {
+        exportInput.select();
+        navigator.clipboard.writeText(exportInput.value);
+        alert("Save code copied to clipboard!");
+      });
+
+      document.getElementById('apply-import-btn').addEventListener('click', () => {
+        const importText = document.getElementById('import-code-input').value;
+        if (!importText) return alert("Please paste a save code or cheat code!");
+        if (importSaveCode(importText)) {
+          if (importText.trim() !== "ADM1N123") {
+            alert("Save data loaded successfully!");
+          }
+          saveModal.classList.add('hidden');
+          document.getElementById('import-code-input').value = '';
+        } else {
+          alert("Invalid code! Please check and try again.");
+        }
+      });
+
+      const statsModal = document.getElementById('stats-modal');
+      document.getElementById('stats-modal-btn').addEventListener('click', () => {
+        document.getElementById('stat-prestige-level').innerText = state.prestigeLevel;
+        document.getElementById('stat-total-coins').innerText = formatNumber(state.totalCoinsEarned);
+        document.getElementById('stat-total-clicks').innerText = state.totalClicks.toLocaleString();
+        document.getElementById('stat-click-coins').innerText = formatNumber(state.clickCoinsEarned);
+
+        let bCount = 0;
+        for (let k in state.buildings) bCount += state.buildings[k].count;
+        document.getElementById('stat-total-buildings').innerText = bCount;
+
+        const playedSec = Math.floor((Date.now() - state.startTime) / 1000);
+        document.getElementById('stat-time-played').innerText = `${Math.floor(playedSec / 60)}m ${playedSec % 60}s`;
+        statsModal.classList.remove('hidden');
+      });
+
+      document.getElementById('close-stats-btn').addEventListener('click', () => statsModal.classList.add('hidden'));
+      document.getElementById('claim-offline-btn').addEventListener('click', () => document.getElementById('offline-modal').classList.add('hidden'));
+      document.getElementById('reset-game-btn').addEventListener('click', resetGame);
+
+      setInterval(gameTick, 100);
+      setInterval(saveGame, 10000);
+    });
+  </script>
+</body>
+</html>
